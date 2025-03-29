@@ -4,8 +4,23 @@ import { Slider } from '@/components/ui/slider';
 import { Card } from '@/components/ui/card';
 import { Bell, Video, Mic, Volume2, Shield, Eye, Moon, Wifi } from 'lucide-react';
 
+type SettingType = 'switch' | 'slider';
+
+interface Setting {
+  id: string;
+  label: string;
+  icon?: React.ReactNode;
+  type: SettingType;
+  default: number | boolean;
+}
+
+interface SettingsGroup {
+  title: string;
+  settings: Setting[];
+}
+
 const SettingsPage = () => {
-  const settingsGroups = [
+  const settingsGroups: SettingsGroup[] = [
     {
       title: 'Audio & Video',
       settings: [
@@ -67,13 +82,13 @@ const SettingsPage = () => {
                 </div>
                 {setting.type === 'switch' ? (
                   <Switch
-                    defaultChecked={setting.default}
+                    defaultChecked={setting.default as boolean}
                     onCheckedChange={(checked) => handleSwitchChange(setting.id, checked)}
                   />
                 ) : setting.type === 'slider' ? (
                   <div className="w-[200px]">
                     <Slider
-                      defaultValue={[setting.default]}
+                      defaultValue={[setting.default as number]}
                       max={100}
                       step={1}
                       onValueChange={(value) => handleSliderChange(setting.id, value)}

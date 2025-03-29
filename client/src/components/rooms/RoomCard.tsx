@@ -8,7 +8,7 @@ interface RoomParticipant {
   userId: number;
   isSpeaker: boolean;
   isMuted: boolean;
-  role: string;
+  role: 'host' | 'speaker' | 'listener';
   hasRaisedHand?: boolean;
   user?: any;
 }

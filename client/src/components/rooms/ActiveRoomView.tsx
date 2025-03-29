@@ -142,7 +142,7 @@ const ActiveRoomView: React.FC<ActiveRoomViewProps> = ({
             host={host}
             speakers={speakers}
             listeners={listeners}
-            currentUserId={currentUserId}
+            currentUserId={currentUserId ?? 0}
           />
 
           {/* Room Controls */}
@@ -152,7 +152,7 @@ const ActiveRoomView: React.FC<ActiveRoomViewProps> = ({
             onToggleMute={toggleMute}
             onRaiseHand={toggleRaiseHand}
             onLeaveRoom={leaveRoom}
-            audioActivity={averageVolume}
+            audioActivity={averageVolume ?? 0}
           />
         </div>
       </div>
