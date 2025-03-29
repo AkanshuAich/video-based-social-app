@@ -18,7 +18,7 @@ export interface RoomParticipant {
   userId: number;
   isSpeaker: boolean;
   isMuted: boolean;
-  role: string;
+  role: 'host' | 'listener' | 'speaker';
   joinedAt: string;
   hasRaisedHand: boolean;
   user?: User;
