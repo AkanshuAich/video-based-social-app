@@ -1,0 +1,109 @@
+Frontend UI Hackathon 2025 
+Official Rules & Guidelines
+
+Submission Link: https://form.typeform.com/to/Hljx9wab
+Prizes*
+1st Place: M4 MacBook Pro
+2nd Place: PlayStation 5
+3rd Place: Ray-Ban Meta Glasses
+*Freelance work opportunities for the top 1% as well!  🎉
+Important dates
+Submission Deadline: Sunday, March 30th 11:59 PM PT
+Winners Announced: After April 3rd 
+Frontend Design Prompts
+Choose any prompt from our collection of UI prompts here ➡️ Frontend UI Hackathon Prompt Ideas
+Link: bit.ly/uihacksprompts 
+Submission Requirements
+Submit up-to 5 submissions ie 5 max. per person (must use a different prompt for each)
+All submissions must be implemented as functional front-end app, not just design mockups
+Your submission must include both the visual design AND working implementation
+You don't need a back-end and can use fake/mock data
+All submissions must include a link to your mini-app. (ie host it Vercel, Replit etc)
+Must choose one of the provided UI design prompts
+Submit via the official form: https://form.typeform.com/to/Hljx9wab
+Eligibility:
+Open to individual participants worldwide but some country restrictions apply
+(see Community Guidelines)
+All skill levels welcome
+Allowed Tools & Resources
+Any design tool (Figma, Sketch, Adobe XD, etc.)
+Any tech stack and libraries are allowed 
+Using LLM tools (like ChatGPT, Claude, DALL-E) or LLM powered tools (Cursor, v0) is permitted
+Judging Criteria
+User Experience: Intuitive navigation and flow
+Visual Design: Aesthetics and brand consistency
+Originality: Innovative approaches and unique solutions
+Presentation: Quality of submission 
+Goal: Functional and Beautiful. The best looking designs that are functional will win! 
+Examples
+These are just screenshots of the apps produced using the list of prompts. Please use your creativity & not get inspired from this for Font / Colors or other inspiration. We’re looking for production ready mini-apps in the hackathon.
+
+
+
+
+
+Terms and Conditions
+By submitting an entry, you agree to our Terms of Use and Privacy Policy
+All submissions must be respectful and no offensive material
+You grant organizers the right to showcase your work
+
+Note: The IP of the data produced belongs to you & you own the rights to your creation. Feel free to create your side projects without any worry :)
+
+If you have any questions about the hackathon, please contact us at uihacks25@outlier.ai (Build a voice-based social app with live rooms and speaker controls. my idea which i chose) only unique ideas regarding frontend 
+
+
+ChatGPT said:
+Unique Frontend Ideas for Your Voice-Based Social App 🎨🎙️
+To make your app visually stunning and highly interactive, here are some unique frontend UI/UX ideas:
+
+1. 3D Audio Rooms with Interactive Avatars 🎭
+3D Circular Room Layout – Arrange speakers in a 360° circular view, with listeners around them.
+
+Real-Time Avatar Expressions – Avatars react to voice tone (e.g., smile when speaking, nod when agreeing).
+
+Tap-to-Move Mechanism – Users "walk" around the room to hear different speakers louder or softer (spatial effect).
+
+2. Gesture-Based Interactions ✋👋
+Swipe to Raise Hand – Instead of clicking a button, users swipe up to request to speak.
+
+Tap to Applaud/Reactions – Listeners double-tap anywhere to send a quick emoji reaction (🔥👏😂).
+
+Voice-Controlled UI – Users can navigate through voice commands, e.g., "Join Tech Talk Room."
+
+3. Dynamic Speaker Highlights & Waveforms 🔊
+Live Voice Waves on Profile Picture – When speaking, a soundwave animation appears around the avatar.
+
+Glow Effect on Active Speakers – Speaker cards glow subtly when someone talks.
+
+Real-Time Voice Pitch Visualization – Display a minimalistic frequency graph when someone speaks.
+
+4. Drag & Drop Stage Management 🎙️
+Drag Listeners to the Stage – Hosts can drag and drop users from the audience to the speaker panel.
+
+Dynamic Speaker Reordering – Change speaker priority visually by dragging their avatar.
+
+Color-Based Roles – Speakers, moderators, and audience members have distinct color-coded avatars.
+
+5. Custom Room Themes & UI Modes 🎨
+Nightclub Mode – Dark theme with neon UI elements for casual discussions.
+
+Podcast Mode – Minimalistic UI with waveform animations for recorded sessions.
+
+Professional Mode – Clean, LinkedIn-style UI for networking events.
+
+6. Live Transcription Overlay & Auto-Generated Captions 📝
+Animated Text Overlay – Live captions appear in sync with the speaker's voice.
+
+Speaker-Specific Highlighting – Different colors for each speaker’s text in live captions.
+
+Swipe-Up Chat for Transcripts – Users can scroll back to see past spoken text with timestamps.
+
+7. Fluid, Motion-Enhanced UI 🎭
+Framer Motion Animations – Smooth transitions when joining/leaving a room.
+
+3D Flip Cards for User Profiles – Clicking a profile flips it like a playing card to show bio/details.
+
+Parallax Background Effects – Subtle parallax scrolling effects for depth and immersion.
+
+Final Thought 💡
+Your app should have fluid animations, dynamic UI interactions, and immersive visual elements to impress hackathon judges. Spatial UI, real-time effects, and voice-based controls will make it stand out! 🚀 (so build this in react js for me and give me the proper file structure and installation guides and use the best ui possible to make it stylish , responsive and beautiful to view).
