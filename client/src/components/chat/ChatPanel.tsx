@@ -67,7 +67,7 @@ export function ChatPanel({ isOpen, onClose, roomId }: ChatPanelProps) {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !currentUserId) return;
 
     const message: Message = {
       id: Math.random().toString(),
