@@ -29,6 +29,8 @@ export interface MockRoom {
   participantCount: number;
   participantLimit: number;
   participants: MockRoomParticipant[];
+  createdAt?: string; // Added for compatibility
+  scheduledFor?: string; // Added for scheduled rooms
 }
 
 export const mockUsers: MockUser[] = [
@@ -50,35 +52,67 @@ export const mockUsers: MockUser[] = [
   },
   {
     id: 3,
-    username: "sarah_chen",
-    displayName: "Sarah Chen",
-    avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
-    bio: "Product Designer",
+    username: "maya_patel",
+    displayName: "Maya Patel",
+    avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+    bio: "Software Developer & Podcaster",
     status: 'online'
   },
   {
     id: 4,
-    username: "michael_kim",
-    displayName: "Michael Kim",
+    username: "josh_thompson",
+    displayName: "Josh Thompson",
     avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-    bio: "Software Engineer",
+    bio: "Marketing & Community Building",
     status: 'offline'
   },
   {
     id: 5,
-    username: "lisa_chen",
-    displayName: "Lisa Chen",
-    avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
-    bio: "Lead Designer",
-    status: 'speaking'
+    username: "sarah_chen",
+    displayName: "Sarah Chen",
+    avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80",
+    bio: "Product Manager & Strategy Consultant",
+    status: 'online'
   },
   {
     id: 6,
-    username: "tom_harris",
-    displayName: "Tom Harris",
-    avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80",
-    bio: "UI Designer",
+    username: "marcus_jones",
+    displayName: "Marcus Jones",
+    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
+    bio: "UI/UX Designer & Creative Director",
+    status: 'offline'
+  },
+  {
+    id: 7,
+    username: "lila_rodriguez",
+    displayName: "Lila Rodriguez",
+    avatarUrl: "https://images.unsplash.com/photo-1554151228-14d9def656e4?auto=format&fit=crop&w=150&q=80",
+    bio: "Data Scientist & Machine Learning Specialist",
     status: 'online'
+  },
+  {
+    id: 8,
+    username: "david_kim",
+    displayName: "David Kim",
+    avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80",
+    bio: "Full-stack Developer & Open Source Contributor",
+    status: 'speaking'
+  },
+  {
+    id: 9,
+    username: "olivia_smith",
+    displayName: "Olivia Smith",
+    avatarUrl: "https://images.unsplash.com/photo-1558898479-33c0057a5d12?auto=format&fit=crop&w=150&q=80",
+    bio: "VR/AR Developer & Tech Educator",
+    status: 'online'
+  },
+  {
+    id: 10,
+    username: "ethan_davis",
+    displayName: "Ethan Davis",
+    avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80",
+    bio: "Growth Hacker & Digital Strategist",
+    status: 'offline'
   }
 ];
 
@@ -87,99 +121,136 @@ export const mockRooms: MockRoom[] = [
     id: 1,
     name: "Tech Talk Daily",
     description: "Web3 and Future of Tech",
-    hostId: 2, // Alex
+    hostId: 2,
     isActive: true,
-    roomType: "tech",
+    roomType: "audio",
     participantCount: 52,
     participantLimit: 100,
+    createdAt: new Date().toISOString(),
     participants: [
       { userId: 2, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false },
       { userId: 3, isSpeaker: true, isMuted: false, role: 'speaker', hasRaisedHand: false },
-      { userId: 1, isSpeaker: false, isMuted: true, role: 'listener', hasRaisedHand: false },
-      { userId: 4, isSpeaker: false, isMuted: true, role: 'listener', hasRaisedHand: false }
     ]
   },
   {
     id: 2,
-    name: "Music Producers Club",
-    description: "Beat making workshop",
-    hostId: 3, // Sarah
+    name: "Design Critique Session",
+    description: "Share your work and get feedback",
+    hostId: 1,
     isActive: true,
-    roomType: "music",
-    participantCount: 33,
-    participantLimit: 50,
+    roomType: "video",
+    participantCount: 15,
+    participantLimit: 20,
+    createdAt: new Date().toISOString(),
     participants: [
-      { userId: 3, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false },
-      { userId: 5, isSpeaker: true, isMuted: false, role: 'speaker', hasRaisedHand: false },
-      { userId: 6, isSpeaker: false, isMuted: true, role: 'listener', hasRaisedHand: false }
+      { userId: 1, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false },
+      { userId: 6, isSpeaker: true, isMuted: true, role: 'speaker', hasRaisedHand: false },
     ]
   },
   {
     id: 3,
-    name: "Design Critique Session",
-    description: "UI/UX designers sharing work and feedback",
-    hostId: 5, // Lisa
+    name: "Coding Help Desk",
+    description: "Get help with your programming problems",
+    hostId: 7,
     isActive: true,
-    roomType: "design",
-    participantCount: 48,
-    participantLimit: 100,
+    roomType: "text",
+    participantCount: 34,
+    participantLimit: 50,
+    createdAt: new Date().toISOString(),
     participants: [
-      { userId: 5, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false },
-      { userId: 6, isSpeaker: true, isMuted: false, role: 'speaker', hasRaisedHand: false },
-      { userId: 2, isSpeaker: false, isMuted: true, role: 'listener', hasRaisedHand: false },
-      { userId: 3, isSpeaker: false, isMuted: true, role: 'listener', hasRaisedHand: false }
+      { userId: 7, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false },
+      { userId: 5, isSpeaker: false, isMuted: true, role: 'listener', hasRaisedHand: true },
+    ]
+  },
+  {
+    id: 4,
+    name: "Startup Pitch Practice",
+    description: "Practice your pitch and get feedback",
+    hostId: 5,
+    isActive: false,
+    roomType: "audio",
+    participantCount: 0,
+    participantLimit: 10,
+    scheduledFor: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+    createdAt: new Date().toISOString(),
+    participants: []
+  },
+  {
+    id: 5,
+    name: "AI Ethics Discussion",
+    description: "Exploring the ethical implications of AI",
+    hostId: 3,
+    isActive: true,
+    roomType: "video",
+    participantCount: 28,
+    participantLimit: 30,
+    createdAt: new Date().toISOString(),
+    participants: [
+      { userId: 3, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false },
+      { userId: 8, isSpeaker: true, isMuted: false, role: 'speaker', hasRaisedHand: false },
     ]
   }
 ];
 
+// Adding upcomingRooms to fix home.tsx error
 export const upcomingRooms = [
   {
-    id: 4,
+    id: 6,
     name: "AI in Creative Industries",
     description: "Discussion about the impact of AI in creative fields",
     scheduledTime: "Tomorrow, 7:00 PM",
     hostId: 3,
-    hostName: "Sophia Lee",
+    hostName: "Maya Patel",
     hostRole: "AI Researcher",
-    hostAvatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=150&q=80"
+    hostAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
   },
   {
-    id: 5,
+    id: 7,
     name: "Indie Game Dev Meetup",
     description: "Share your projects and get feedback",
     scheduledTime: "Today, 9:30 PM",
     hostId: 6,
-    hostName: "David Chen",
+    hostName: "Marcus Jones",
     hostRole: "Game Developer",
-    hostAvatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=150&q=80"
+    hostAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80"
   },
   {
-    id: 6,
+    id: 8,
     name: "Mental Health in Tech",
     description: "Open discussion about wellbeing in the tech industry",
     scheduledTime: "Friday, 6:00 PM",
     hostId: 1,
-    hostName: "Jamie Williams",
+    hostName: "Emma Wilson",
     hostRole: "Wellbeing Coach",
-    hostAvatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=150&q=80"
+    hostAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80"
   }
 ];
 
+// Adding userRooms to fix profile.tsx error
 export const userRooms = [
   {
     id: 1,
     name: "Tech Talk Daily",
-    isActive: true
+    isActive: true,
+    roomType: "audio"
   },
   {
-    id: 7,
-    name: "Music Producers",
-    isActive: true
+    id: 2,
+    name: "Design Critique Session",
+    isActive: true,
+    roomType: "video"
   },
   {
-    id: 8,
+    id: 9,
+    name: "UX Research Group",
+    isActive: true,
+    roomType: "text"
+  },
+  {
+    id: 10,
     name: "Chill Lounge",
-    isActive: false
+    isActive: false,
+    roomType: "audio"
   }
 ];
 
@@ -189,21 +260,54 @@ export const friends = [
     displayName: "Alex Morgan",
     avatarUrl: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=80&q=80",
     status: "speaking",
-    statusText: "Speaking now"
+    room: {
+      id: 1,
+      name: "Tech Talk Daily"
+    }
   },
   {
     id: 3,
-    displayName: "Sarah Chen",
-    avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80",
-    status: "online",
-    statusText: "Online"
+    displayName: "Maya Patel",
+    avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80",
+    status: "online"
   },
   {
-    id: 4,
-    displayName: "Michael Kim",
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80",
-    status: "offline",
-    statusText: "Offline"
+    id: 5,
+    displayName: "Sarah Chen",
+    avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=80&q=80",
+    status: "online"
+  },
+  {
+    id: 6,
+    displayName: "Marcus Jones",
+    avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&q=80",
+    status: "offline"
+  }
+];
+
+export const notifications = [
+  {
+    id: 1,
+    type: "room_invite",
+    fromUser: mockUsers[1], // Alex Morgan
+    room: mockRooms[0], // Tech Talk Daily
+    timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 minutes ago
+    isRead: false
+  },
+  {
+    id: 2,
+    type: "friend_request",
+    fromUser: mockUsers[6], // Lila Rodriguez
+    timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
+    isRead: false
+  },
+  {
+    id: 3,
+    type: "room_mention",
+    fromUser: mockUsers[2], // Maya Patel
+    room: mockRooms[2], // Coding Help Desk
+    timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(), // 1 hour ago
+    isRead: true
   }
 ];
 
@@ -215,4 +319,31 @@ export function getUserById(id: number): MockUser | undefined {
 // Function to get room by ID
 export function getRoomById(id: number): MockRoom | undefined {
   return mockRooms.find(room => room.id === id);
+}
+
+// Function to add a new room (for create room functionality)
+export function addMockRoom(room: Partial<MockRoom>): MockRoom {
+  // Ensure we have a valid ID
+  const newId = room.id || mockRooms.length > 0 ? Math.max(...mockRooms.map(r => r.id)) + 1 : 1;
+  
+  // Create a complete room object with default values for missing properties
+  const newRoom: MockRoom = {
+    id: newId,
+    name: room.name || 'Unnamed Room',
+    description: room.description || 'No description provided',
+    hostId: room.hostId || 1,
+    isActive: room.isActive !== undefined ? room.isActive : true,
+    roomType: room.roomType || 'audio',
+    participantCount: room.participantCount || 1,
+    participantLimit: room.participantLimit || 50,
+    participants: room.participants || [],
+    createdAt: room.createdAt || new Date().toISOString(),
+    scheduledFor: room.scheduledFor
+  };
+  
+  // Add to mock rooms array
+  mockRooms.push(newRoom);
+  
+  console.log(`Created new room: ${newRoom.name} (ID: ${newRoom.id})`);
+  return newRoom;
 }

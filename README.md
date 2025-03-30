@@ -1,6 +1,6 @@
 # Video-Based Social App
 
-A modern, real-time social platform for hosting and participating in audio/video rooms, inspired by platforms like Clubhouse and Twitter Spaces.
+A modern, frontend-only social platform for hosting and participating in audio/video rooms, inspired by platforms like Clubhouse and Twitter Spaces. Built for a hackathon demonstration with mock data.
 
 ## Features
 
@@ -42,11 +42,7 @@ A modern, real-time social platform for hosting and participating in audio/video
 - Framer Motion for animations
 - React Query for state management
 - WebRTC for video/audio streaming
-
-### Backend
-- Node.js API server
-- WebSocket for real-time communication
-- RESTful API endpoints
+- Mock data for demonstration purposes
 
 ## Getting Started
 
@@ -64,28 +60,17 @@ cd video-based-social-app
 
 2. Install dependencies:
 ```bash
-# Install client dependencies
-cd client
-npm install
-
-# Install server dependencies (if applicable)
-cd ../server
 npm install
 ```
 
-3. Set up environment variables:
+3. Start the development server:
 ```bash
-# In client directory
-cp .env.example .env.local
+npm run dev
 ```
 
-4. Start the development servers:
-```bash
-# Start client (from client directory)
-npm run dev
-
-# Start server (from server directory)
-npm run dev
+4. Open your browser and navigate to:
+```
+http://localhost:3002
 ```
 
 ## Usage
@@ -97,9 +82,9 @@ npm run dev
    - Start the room
 
 2. **Joining a Room**:
-   - Browse available rooms
+   - Browse available rooms on the home page
    - Click on a room to join
-   - Grant necessary permissions (audio/video)
+   - Grant necessary permissions (audio/video if prompted)
 
 3. **Room Controls**:
    - Toggle audio with the microphone button
@@ -108,13 +93,26 @@ npm run dev
    - Access chat via the chat button
    - Leave room using the exit button
 
-## Contributing
+## Deployment
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+This application is configured for easy deployment to Vercel:
+
+1. Fork or clone this repository to your GitHub account
+2. Create a new project on Vercel
+3. Import your GitHub repository
+4. Vercel will automatically detect the configuration in `vercel.json`
+5. Deploy the project
+
+No additional configuration is required as this is a frontend-only application using mock data.
+
+## Hackathon Implementation Notes
+
+This application was built as a hackathon submission with the following design decisions:
+
+- **Frontend-only implementation**: All data is mocked locally without requiring a backend
+- **WebRTC simulation**: Video and audio functionality uses browser WebRTC APIs
+- **Error handling**: Graceful fallbacks when permissions are denied
+- **Performance optimization**: Minimized dependencies and asset sizes
 
 ## License
 

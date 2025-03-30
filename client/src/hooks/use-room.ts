@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { apiRequest } from '@/lib/queryClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from './use-toast';
+import { mockRooms, mockUsers, addMockRoom, getRoomById } from '@/lib/mockData';
+import { apiRequest } from '@/lib/queryClient';
 
 export interface User {
   id: number;
@@ -206,55 +207,52 @@ export function useRoomData(roomId: number) {
       }
     },
     onSuccess: (_, variables) => {
-      console.log(`Successfully ${variables.isRaised ? 'raised' : 'lowered'} hand in room ${roomId}`);
+      const action = variables.isRaised ? 'raised' : 'lowered';
+      console.log(`Hand ${action} successfully`);
       queryClient.invalidateQueries({ queryKey: [`/api/rooms/${roomId}/participants`] });
       
       toast({
-        title: variables.isRaised ? "Hand Raised" : "Hand Lowered",
-        description: variables.isRaised ? "You have raised your hand" : "You have lowered your hand",
+        title: `Hand ${action}`,
+        description: `You've ${action} your hand`,
       });
     },
     onError: (error: Error) => {
       console.error('Raise hand mutation error:', error);
       toast({
-        title: "Failed to update hand status",
+        title: "Failed to raise/lower hand",
         description: error.message || "An unknown error occurred",
         variant: "destructive",
       });
     }
   });
-  
+
   return {
     room: roomQuery.data,
-    participants: participantsQuery.data,
-    isLoading: roomQuery.isLoading,
-    isRefetching: roomQuery.isRefetching,
-    error: roomQuery.error || (isBadRoomId ? new Error("Room not found") : null),
+    participants: participantsQuery.data || [],
+    isLoading: roomQuery.isLoading || participantsQuery.isLoading,
+    error: roomQuery.error || participantsQuery.error,
     joinRoom: joinRoomMutation.mutate,
     leaveRoom: leaveRoomMutation.mutate,
-    raiseHand: raiseHandMutation.mutate,
-    isJoining: joinRoomMutation.isPending,
-    isLeaving: leaveRoomMutation.isPending,
-    isRaisingHand: raiseHandMutation.isPending,
-    isInvalidRoom: isBadRoomId,
-    participantsLoading: participantsQuery.isLoading,
-    participantsError: participantsQuery.error,
-    roomState: roomState
+    raiseHand: raiseHandMutation.mutate
   };
 }
 
+// Updated useRoomsList to return mock data for the frontend-only application
 export function useRoomsList() {
-  const { toast } = useToast();
-  
-  const roomsQuery = useQuery<Room[]>({
-    queryKey: ['/api/rooms'],
-  });
-  
-  return {
-    rooms: roomsQuery.data || [],
-    isLoading: roomsQuery.isLoading,
-    error: roomsQuery.error
+  // Create a mock rooms list with proper data structure expected by the components
+  // This ensures all room types (Audio, Video, Text) work properly
+  const mockRoomsList = {
+    rooms: mockRooms.map(room => ({
+      ...room,
+      // Add any missing properties needed by the components
+      participants: room.participants || [],
+      host: mockUsers.find(user => user.id === room.hostId)
+    })),
+    isLoading: false,
+    error: null
   };
+  
+  return mockRoomsList;
 }
 
 export function useCreateRoom() {
@@ -263,13 +261,43 @@ export function useCreateRoom() {
   
   const createRoomMutation = useMutation({
     mutationFn: async (roomData: any) => {
-      console.log('Sending data to server:', roomData);
+      console.log('Creating new room with mock data:', roomData);
       try {
-        const response = await apiRequest('POST', '/api/rooms', roomData);
-        return response.json();
+        // For frontend-only hackathon demo, create a mock room
+        const newRoomId = mockRooms.length > 0 ? Math.max(...mockRooms.map(r => r.id)) + 1 : 1;
+        
+        // Create the new mock room
+        const newRoom = {
+          id: newRoomId,
+          name: roomData.name,
+          description: roomData.description,
+          hostId: roomData.hostId || 1, // Default to first user if not specified
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          scheduledFor: roomData.scheduledFor,
+          roomType: roomData.roomType || 'audio',
+          participantLimit: roomData.participantLimit || 50,
+          participantCount: 1, // Start with just the host
+          // Add host as first participant with explicitly typed role
+          participants: [
+            { 
+              userId: roomData.hostId || 1, 
+              isSpeaker: true, 
+              isMuted: false, 
+              role: 'host' as 'host', // Explicitly cast to fix TypeScript error
+              hasRaisedHand: false 
+            }
+          ]
+        };
+        
+        // Add the room to our mock data
+        addMockRoom(newRoom);
+        
+        // Return the created room
+        return newRoom;
       } catch (error) {
-        console.error("Error in create room api request:", error);
-        throw error;
+        console.error("Error in mock room creation:", error);
+        throw new Error("Failed to create room in mock data");
       }
     },
     onSuccess: (data) => {

@@ -5,10 +5,12 @@ export function useAudioInput() {
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
+  const [isMockAudio, setIsMockAudio] = useState(false);
 
   // Initialize audio context and analyser
   const initializeAudio = useCallback(async () => {
     try {
+      // Try to get user media
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const context = new AudioContext();
       const source = context.createMediaStreamSource(stream);
@@ -20,17 +22,27 @@ export function useAudioInput() {
       setAudioStream(stream);
       setAudioContext(context);
       setAnalyser(analyserNode);
+      setIsMockAudio(false);
     } catch (error) {
       console.error('Error initializing audio:', error);
+      // Fall back to mock audio for the hackathon demo
+      setIsMockAudio(true);
+      
+      // Set a timer to simulate audio levels changing for the UI
+      const mockAudioTimer = setInterval(() => {
+        setAudioLevel(Math.random() * 0.5); // Random levels between 0-0.5
+      }, 500);
+      
+      return () => clearInterval(mockAudioTimer);
     }
   }, []);
 
   // Start audio capture and analysis
   const startAudioCapture = useCallback(async () => {
-    if (!audioContext) {
+    if (!audioContext && !isMockAudio) {
       await initializeAudio();
     }
-  }, [audioContext, initializeAudio]);
+  }, [audioContext, initializeAudio, isMockAudio]);
 
   // Stop audio capture
   const stopAudioCapture = useCallback(() => {
@@ -44,30 +56,53 @@ export function useAudioInput() {
     }
     setAnalyser(null);
     setAudioLevel(0);
+    setIsMockAudio(false);
   }, [audioStream, audioContext]);
 
   // Analyze audio levels
   useEffect(() => {
-    if (!analyser) return;
+    if (!analyser && !isMockAudio) return;
+    
+    // If using real audio (not mock)
+    if (analyser) {
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      let animationFrameId: number;
 
-    const dataArray = new Uint8Array(analyser.frequencyBinCount);
-    let animationFrameId: number;
+      const updateLevel = () => {
+        analyser.getByteFrequencyData(dataArray);
+        const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+        setAudioLevel(average / 255); // Normalize to 0-1
+        animationFrameId = requestAnimationFrame(updateLevel);
+      };
 
-    const updateLevel = () => {
-      analyser.getByteFrequencyData(dataArray);
-      const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
-      setAudioLevel(average / 255); // Normalize to 0-1
-      animationFrameId = requestAnimationFrame(updateLevel);
-    };
+      updateLevel();
 
-    updateLevel();
+      return () => {
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+        }
+      };
+    }
+    
+    // For mock audio, we already set up the timer in initializeAudio
+  }, [analyser, isMockAudio]);
 
-    return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-    };
-  }, [analyser]);
+  // Mock audio simulation for demo purposes
+  useEffect(() => {
+    if (isMockAudio) {
+      const mockInterval = setInterval(() => {
+        // Simulate speaking patterns with random levels
+        const randomLevel = Math.random();
+        if (randomLevel > 0.7) {
+          setAudioLevel(randomLevel * 0.6); // Occasional peaks
+        } else {
+          setAudioLevel(randomLevel * 0.2); // Lower baseline
+        }
+      }, 300);
+      
+      return () => clearInterval(mockInterval);
+    }
+  }, [isMockAudio]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -79,6 +114,7 @@ export function useAudioInput() {
   return {
     audioLevel,
     startAudioCapture,
-    stopAudioCapture
+    stopAudioCapture,
+    isMockAudio
   };
 }
