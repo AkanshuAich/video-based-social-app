@@ -26,11 +26,12 @@ export interface MockRoom {
   hostId: number;
   isActive: boolean;
   roomType: string;
+  category: string;
   participantCount: number;
   participantLimit: number;
   participants: MockRoomParticipant[];
-  createdAt?: string; // Added for compatibility
-  scheduledFor?: string; // Added for scheduled rooms
+  createdAt?: string;
+  scheduledFor?: string;
 }
 
 export const mockUsers: MockUser[] = [
@@ -124,6 +125,7 @@ export const mockRooms: MockRoom[] = [
     hostId: 2,
     isActive: true,
     roomType: "audio",
+    category: "tech",
     participantCount: 52,
     participantLimit: 100,
     createdAt: new Date().toISOString(),
@@ -139,6 +141,7 @@ export const mockRooms: MockRoom[] = [
     hostId: 1,
     isActive: true,
     roomType: "video",
+    category: "design",
     participantCount: 15,
     participantLimit: 20,
     createdAt: new Date().toISOString(),
@@ -149,45 +152,92 @@ export const mockRooms: MockRoom[] = [
   },
   {
     id: 3,
-    name: "Coding Help Desk",
-    description: "Get help with your programming problems",
-    hostId: 7,
+    name: "Music Production Workshop",
+    description: "Learn music production basics",
+    hostId: 3,
     isActive: true,
-    roomType: "text",
-    participantCount: 34,
-    participantLimit: 50,
+    roomType: "video",
+    category: "music",
+    participantCount: 25,
+    participantLimit: 30,
     createdAt: new Date().toISOString(),
     participants: [
-      { userId: 7, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false },
-      { userId: 5, isSpeaker: false, isMuted: true, role: 'listener', hasRaisedHand: true },
+      { userId: 3, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false }
     ]
   },
   {
     id: 4,
-    name: "Startup Pitch Practice",
-    description: "Practice your pitch and get feedback",
-    hostId: 5,
-    isActive: false,
-    roomType: "audio",
-    participantCount: 0,
-    participantLimit: 10,
-    scheduledFor: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+    name: "UI/UX Design Trends 2025",
+    description: "Discussing latest design trends",
+    hostId: 1,
+    isActive: true,
+    roomType: "video",
+    category: "design",
+    participantCount: 42,
+    participantLimit: 50,
     createdAt: new Date().toISOString(),
-    participants: []
+    participants: [
+      { userId: 1, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false }
+    ]
   },
   {
     id: 5,
-    name: "AI Ethics Discussion",
-    description: "Exploring the ethical implications of AI",
-    hostId: 3,
+    name: "Gaming Community Meetup",
+    description: "Casual gaming discussion",
+    hostId: 4,
     isActive: true,
-    roomType: "video",
-    participantCount: 28,
-    participantLimit: 30,
+    roomType: "audio",
+    category: "gaming",
+    participantCount: 35,
+    participantLimit: 50,
     createdAt: new Date().toISOString(),
     participants: [
-      { userId: 3, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false },
-      { userId: 8, isSpeaker: true, isMuted: false, role: 'speaker', hasRaisedHand: false },
+      { userId: 4, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false }
+    ]
+  },
+  {
+    id: 6,
+    name: "Business Strategy Session",
+    description: "Startup growth strategies",
+    hostId: 5,
+    isActive: true,
+    roomType: "video",
+    category: "business",
+    participantCount: 18,
+    participantLimit: 25,
+    createdAt: new Date().toISOString(),
+    participants: [
+      { userId: 5, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false }
+    ]
+  },
+  {
+    id: 7,
+    name: "Tech Interview Prep",
+    description: "Practice coding interviews",
+    hostId: 2,
+    isActive: true,
+    roomType: "video",
+    category: "tech",
+    participantCount: 12,
+    participantLimit: 15,
+    createdAt: new Date().toISOString(),
+    participants: [
+      { userId: 2, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false }
+    ]
+  },
+  {
+    id: 8,
+    name: "Education Innovation",
+    description: "Future of online learning",
+    hostId: 3,
+    isActive: true,
+    roomType: "audio",
+    category: "education",
+    participantCount: 28,
+    participantLimit: 40,
+    createdAt: new Date().toISOString(),
+    participants: [
+      { userId: 3, isSpeaker: true, isMuted: false, role: 'host', hasRaisedHand: false }
     ]
   }
 ];
@@ -334,6 +384,7 @@ export function addMockRoom(room: Partial<MockRoom>): MockRoom {
     hostId: room.hostId || 1,
     isActive: room.isActive !== undefined ? room.isActive : true,
     roomType: room.roomType || 'audio',
+    category: room.category || 'tech',
     participantCount: room.participantCount || 1,
     participantLimit: room.participantLimit || 50,
     participants: room.participants || [],

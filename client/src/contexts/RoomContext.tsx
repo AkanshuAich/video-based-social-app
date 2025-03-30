@@ -5,13 +5,6 @@ import { useRoomData } from '@/hooks/use-room';
 import { useAudioInput } from '@/hooks/use-audio-input';
 import { getRoomById, getUserById, mockUsers } from '@/lib/mockData';
 
-// For TypeScript
-declare global {
-  interface Window {
-    DEBUG_MODE?: boolean;
-  }
-}
-
 interface RoomContextType {
   roomId: number | null;
   currentUserId: number | null;
@@ -49,45 +42,51 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
 
   const { audioLevel, startAudioCapture, stopAudioCapture, isMockAudio } = useAudioInput();
   
-  const {
-    participants,
-    leaveRoom: leaveRoomMutation,
-    raiseHand: raiseHandMutation
-  } = useRoomData(roomId || 0);
+  // Mock data: no real hand raising for hackathon demo
+  const [isHandRaised, setIsHandRaised] = useState(false);
+  
+  const participants = [] as any[];
 
-  // Toggle mute state
+  // Cleanup WS on unmount
+  useEffect(() => {
+    return () => {
+      if (wsInstance) {
+        wsInstance.close();
+      }
+    };
+  }, [wsInstance]);
+
   const toggleMute = useCallback(() => {
     setIsMuted(prev => !prev);
   }, []);
 
-  // Handle audio capture based on mute state with error handling
-  useEffect(() => {
-    // Only attempt to manage audio if user is in a room
-    if (isInRoom) {
-      if (!isMuted) {
-        try {
-          startAudioCapture().catch(err => {
-            // Silent catch for hackathon demo to avoid console errors
-            console.log('Using mock audio for hackathon demo');
-          });
-        } catch (err) {
-          // Fallback for any synchronous errors
-          console.log('Using mock audio for hackathon demo');
-        }
-      } else {
-        stopAudioCapture();
-      }
-    }
-  }, [isMuted, startAudioCapture, stopAudioCapture, isInRoom]);
+  const raiseHand = useCallback(({ userId, isRaised }: { userId: number; isRaised: boolean }) => {
+    setIsHandRaised(isRaised);
+    
+    toast({
+      title: isRaised ? "Hand Raised" : "Hand Lowered",
+      description: isRaised ? "The host will be notified" : "Your hand has been lowered"
+    });
+  }, [toast]);
 
-  // Mock WebSocket initialization for hackathon demo
   const initializeWebSocket = useCallback((roomId: number) => {
-    console.log('Mock WebSocket initialized for room:', roomId);
-    // No real WebSocket needed for hackathon
+    // For hackathon demo we're not connecting to a real WebSocket, but mock the connection
+    console.log(`Initializing mock WebSocket for room ${roomId}`);
+    const mockWs = {
+      send: (data: string) => {
+        // Mock implementation
+        console.log('Mock WS send:', data);
+      },
+      close: () => {
+        // Mock implementation
+        console.log('Mock WS closed');
+      }
+    } as unknown as WebSocket;
+    
+    setWsInstance(mockWs);
     setWsReady(true);
   }, []);
 
-  // Clean up room resources without navigation or toasts
   const cleanupRoomResources = useCallback(() => {
     stopAudioCapture();
     setWsInstance(null);
@@ -101,18 +100,12 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
     if (!currentUserId) {
       toast({
         title: "Error",
-        description: "Please log in first",
+        description: "You need to be logged in to join a room",
         variant: "destructive"
       });
       return;
     }
 
-    // If already in a room, clean up resources first but don't navigate or show toasts
-    if (isInRoom && currentRoomId) {
-      cleanupRoomResources();
-    }
-
-    // For hackathon demo: check if room exists in mock data
     const room = getRoomById(roomId);
     if (!room) {
       toast({
@@ -123,18 +116,17 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    // Set room state
     setRoomId(roomId);
     setCurrentRoomId(roomId);
     setIsInRoom(true);
     initializeWebSocket(roomId);
     
-    // Try to start audio capture with error handling for hackathon
+    // Try to start audio capture
     try {
-      startAudioCapture().catch(() => {
-        console.log('Using mock audio for hackathon demo');
-      });
+      startAudioCapture().catch(console.error);
     } catch (err) {
-      console.log('Using mock audio for hackathon demo');
+      console.error('Audio capture error:', err);
     }
 
     toast({
@@ -142,67 +134,92 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
       description: `You've joined ${room.name}`,
     });
     
-    // Navigate to the room page directly from the context
+    // Navigate to room
     navigate(`/room/${roomId}`);
-  }, [currentUserId, initializeWebSocket, startAudioCapture, toast, isInRoom, currentRoomId, cleanupRoomResources, navigate]);
+  }, [currentUserId, initializeWebSocket, startAudioCapture, toast, navigate]);
 
   const leaveRoom = useCallback(() => {
+    const room = getRoomById(currentRoomId!);
+    if (room) {
+      toast({
+        title: "Left Room",
+        description: `You have left ${room.name}`
+      });
+    }
+
     // Clean up resources
     cleanupRoomResources();
     
-    toast({
-      title: "Left Room",
-      description: "You have left the room"
-    });
-    
-    // Add redirection to home page after leaving the room
+    // Navigate home
     navigate('/');
-  }, [cleanupRoomResources, toast, navigate]);
+  }, [cleanupRoomResources, currentRoomId, toast, navigate]);
 
   const sendVoiceActivity = useCallback((activityLevel: number) => {
-    // Mock sending voice activity for hackathon demo
-    if (window.DEBUG_MODE) {
-      console.log('Mock sending voice activity:', activityLevel);
+    if (wsInstance && wsReady) {
+      try {
+        const message = {
+          type: 'voice_activity',
+          data: {
+            userId: currentUserId,
+            level: activityLevel
+          }
+        };
+        wsInstance.send(JSON.stringify(message));
+      } catch (error) {
+        console.error('Error sending voice activity:', error);
+      }
     }
-  }, []);
+  }, [wsInstance, wsReady, currentUserId]);
 
-  // Get current user's participant data
-  const currentParticipant = participants?.find(p => p.userId === currentUserId);
-  const isHandRaised = currentParticipant?.hasRaisedHand || false;
-
-  const value = {
-    roomId,
-    currentUserId,
-    isMuted,
-    isHandRaised,
-    participants: participants || [],
-    toggleMute,
-    raiseHand: raiseHandMutation,
-    leaveRoom,
-    setRoomId,
-    setCurrentUserId,
-    audioLevel,
-    wsInstance,
-    joinRoom,
-    initializeWebSocket,
-    sendVoiceActivity,
-    wsReady,
-    isInRoom,
-    currentRoomId,
-    isMockAudio
-  };
+  useEffect(() => {
+    // When mute status changes and the user is in a room, send status to WS
+    if (isInRoom && wsInstance && wsReady) {
+      try {
+        const message = {
+          type: 'mute_status',
+          data: {
+            userId: currentUserId,
+            isMuted
+          }
+        };
+        wsInstance.send(JSON.stringify(message));
+      } catch (error) {
+        console.error('Error sending mute status:', error);
+      }
+    }
+  }, [isMuted, isInRoom, wsInstance, wsReady, currentUserId]);
 
   return (
-    <RoomContext.Provider value={value}>
+    <RoomContext.Provider value={{
+      roomId,
+      currentUserId,
+      isMuted,
+      isHandRaised,
+      participants,
+      toggleMute,
+      raiseHand,
+      leaveRoom,
+      setRoomId,
+      setCurrentUserId,
+      audioLevel,
+      wsInstance,
+      joinRoom,
+      initializeWebSocket,
+      sendVoiceActivity,
+      wsReady,
+      isInRoom,
+      currentRoomId,
+      isMockAudio
+    }}>
       {children}
     </RoomContext.Provider>
   );
 }
 
-export const useRoom = () => {
+export function useRoom() {
   const context = useContext(RoomContext);
-  if (!context) {
+  if (context === null) {
     throw new Error('useRoom must be used within a RoomProvider');
   }
   return context;
-};
+}

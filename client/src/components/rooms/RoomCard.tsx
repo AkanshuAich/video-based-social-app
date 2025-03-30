@@ -33,7 +33,6 @@ const RoomCard: React.FC<RoomCardProps> = ({
   participantCount,
   participants = []
 }) => {
-  const { joinRoom } = useRoom();
   const [, navigate] = useLocation();
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
@@ -66,10 +65,9 @@ const RoomCard: React.FC<RoomCardProps> = ({
     setRotation({ x: 0, y: 0 });
   };
   
-  // Handle room join
+  // Handle room join - directly navigate to room page
   const handleJoinRoom = () => {
-    joinRoom(id);
-    // Navigate to the room page after joining
+    // Navigate directly to room page without waiting for join process
     navigate(`/room/${id}`);
   };
   
@@ -103,109 +101,110 @@ const RoomCard: React.FC<RoomCardProps> = ({
             </span>
           </div>
           
-          <div className="room-circle flex items-center justify-center p-4 rounded-full">
-            <div className="relative w-full h-48 flex items-center justify-center">
-              {/* Host (Center) */}
+          {/* Host */}
+          <div className="mb-4">
+            <p className="text-xs font-medium text-muted mb-2">Host</p>
+            <div className="flex items-center">
               {host && (
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <UserAvatar 
-                    user={host} 
-                    size="lg" 
-                    isSpeaking={true} 
-                    isMuted={false} 
-                    role="host"
-                    showWaveform={true}
-                  />
-                </div>
+                <UserAvatar 
+                  user={host}
+                  size="sm"
+                  isMuted={false}
+                  role="host"
+                />
               )}
-              
-              {/* Speakers around host */}
-              {speakers.slice(0, 2).map((speaker, i) => {
-                const user = getUserById(speaker.userId);
-                if (!user) return null;
-                
-                return (
-                  <div 
-                    key={speaker.userId}
-                    className={`absolute ${
-                      i === 0 ? 'top-1/4 left-1/4' : 'top-1/4 right-1/4'
-                    }`}
-                  >
-                    <UserAvatar 
-                      user={user} 
-                      size="md" 
-                      isSpeaking={!speaker.isMuted} 
-                      isMuted={speaker.isMuted} 
-                      role={speaker.role}
-                      showWaveform={!speaker.isMuted}
-                    />
-                  </div>
-                );
-              })}
-              
-              {/* Listeners around */}
-              {listeners.slice(0, 4).map((listener, i) => {
-                const user = getUserById(listener.userId);
-                if (!user) return null;
-                
-                const positions = [
-                  'bottom-1/4 left-1/3',
-                  'bottom-1/4 right-1/3',
-                  'bottom-10 right-1/4',
-                  'bottom-10 left-1/4'
-                ];
-                
-                return (
-                  <div 
-                    key={listener.userId}
-                    className={`absolute ${positions[i]}`}
-                  >
-                    <UserAvatar 
-                      user={user} 
-                      size="sm" 
-                      isSpeaking={false} 
-                      isMuted={true} 
-                      role="listener"
-                    />
-                  </div>
-                );
-              })}
-              
-              {/* More users indicator */}
-              {participantCount > 7 && (
-                <div className="absolute bottom-10 left-1/4">
-                  <div className="flex items-center justify-center w-14 h-14 rounded-full bg-accent border-2 border-border text-xs text-muted">
-                    +{participantCount - 7} more
-                  </div>
-                </div>
-              )}
+              <div className="ml-2">
+                <p className="text-sm font-medium">{host?.displayName}</p>
+                <p className="text-xs text-muted">{host?.bio?.split(' ').slice(0, 3).join(' ')}...</p>
+              </div>
             </div>
           </div>
           
-          <div className="mt-4 flex justify-between items-center">
-            <div className="flex items-center">
-              <div className="flex -space-x-2">
-                {participants.slice(0, 3).map(p => {
-                  const user = getUserById(p.userId);
-                  return user ? (
-                    <img 
-                      key={p.userId}
-                      src={user.avatarUrl} 
-                      alt={user.displayName} 
-                      className="w-6 h-6 rounded-full border border-card"
-                    />
-                  ) : null;
-                })}
+          {/* Participants */}
+          <div className="flex mt-2 space-x-6">
+            <div className="flex-1">
+              <p className="text-xs font-medium text-muted mb-2">Speaking</p>
+              <div className="flex -space-x-2 overflow-hidden">
+                {speakers.length > 0 ? (
+                  speakers.map((speaker, i) => {
+                    const user = getUserById(speaker.userId);
+                    if (!user) return null;
+                    
+                    return (
+                      <div key={`speaker-${speaker.userId}`} className="border-2 border-background rounded-full">
+                        <UserAvatar 
+                          user={user}
+                          size="sm"
+                          isMuted={speaker.isMuted}
+                          role="speaker"
+                        />
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs">
+                    <span>0</span>
+                  </div>
+                )}
               </div>
-              <span className="text-muted text-sm ml-2">{participantCount} people</span>
             </div>
-            <button 
-              className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm transition-colors"
-              onClick={handleJoinRoom}
-            >
-              Join Room
-            </button>
+            
+            <div className="flex-1">
+              <p className="text-xs font-medium text-muted mb-2">Listening</p>
+              <div className="flex -space-x-2 overflow-hidden">
+                {listeners.length > 0 ? (
+                  listeners.map((listener, i) => {
+                    const user = getUserById(listener.userId);
+                    if (!user) return null;
+                    
+                    return (
+                      <div key={`listener-${listener.userId}`} className="border-2 border-background rounded-full">
+                        <UserAvatar 
+                          user={user}
+                          size="sm"
+                          isMuted={true}
+                          role="listener"
+                        />
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs">
+                    <span>0</span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
+        </div>
+        
+        {/* Join Button */}
+        <div className="p-4 pt-3 border-t border-border flex justify-between items-center">
+          <div className="flex items-center">
+            <div className="flex -space-x-1.5 overflow-hidden mr-2">
+              {[...speakers, ...listeners].slice(0, 3).map((p, i) => {
+                const user = getUserById(p.userId);
+                if (!user) return null;
+                
+                return (
+                  <div key={`avatar-${p.userId}`} className="w-6 h-6 rounded-full overflow-hidden border-2 border-background">
+                    <img src={user.avatarUrl} alt={user.displayName} className="w-full h-full object-cover" />
+                  </div>
+                );
+              })}
+            </div>
+            <span className="text-xs text-muted">{participantCount} people</span>
+          </div>
+          
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              handleJoinRoom();
+            }}
+            className="px-4 py-1.5 text-sm bg-primary hover:bg-primary/90 text-white rounded-full transition-colors duration-200"
+          >
+            Join Room
+          </button>
         </div>
       </div>
     </motion.div>

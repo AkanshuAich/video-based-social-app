@@ -32,28 +32,32 @@ const Explore: React.FC = () => {
   };
   
   // Filter rooms based on search query, tab and selected categories
-  const filteredRooms = mockRooms
-    .filter(room => {
-      // Filter by search query
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        return (
-          room.name.toLowerCase().includes(query) ||
-          room.description.toLowerCase().includes(query)
-        );
-      }
-      return true;
-    })
-    .filter(room => {
-      // Filter by tab
-      if (activeTab === 'all') return true;
-      return room.roomType === activeTab;
-    })
-    .filter(room => {
-      // Filter by selected categories
-      if (selectedCategories.length === 0) return true;
-      return selectedCategories.includes(room.roomType);
-    });
+  const filteredRooms = mockRooms.filter(room => {
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchesSearch = 
+        room.name.toLowerCase().includes(query) ||
+        room.description.toLowerCase().includes(query) ||
+        mockUsers.find(u => u.id === room.hostId)?.displayName.toLowerCase().includes(query);
+      
+      if (!matchesSearch) return false;
+    }
+    
+    // Tab filter
+    if (activeTab !== 'all') {
+      if (activeTab === 'tech' && room.category !== 'tech') return false;
+      if (activeTab === 'music' && room.category !== 'music') return false;
+      if (activeTab === 'design' && room.category !== 'design') return false;
+    }
+    
+    // Category filter (when using badges)
+    if (selectedCategories.length > 0 && !selectedCategories.includes(room.category)) {
+      return false;
+    }
+    
+    return true;
+  });
   
   return (
     <div className="p-4 pb-20 md:pb-4">
@@ -98,89 +102,27 @@ const Explore: React.FC = () => {
             ))}
           </div>
           
-          <TabsContent value="all" className="m-0">
-            {filteredRooms.length > 0 ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {filteredRooms.map(room => (
-                  <RoomCard
-                    key={room.id}
-                    id={room.id}
-                    name={room.name}
-                    description={room.description}
-                    hostId={room.hostId}
-                    isActive={room.isActive}
-                    participantCount={room.participantCount}
-                    participants={room.participants}
-                  />
-                ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredRooms.length === 0 ? (
+              <div className="col-span-full text-center py-8">
+                <p className="text-lg font-medium mb-2">No rooms found</p>
+                <p className="text-muted">Try adjusting your filters or search query</p>
               </div>
             ) : (
-              <div className="text-center py-12">
-                <div className="rounded-full bg-accent w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <Search className="h-6 w-6 text-muted" />
-                </div>
-                <h3 className="text-lg font-medium mb-2">No rooms found</h3>
-                <p className="text-muted">Try different search terms or filters</p>
-              </div>
+              filteredRooms.map(room => (
+                <RoomCard
+                  key={room.id}
+                  id={room.id}
+                  name={room.name}
+                  description={room.description}
+                  hostId={room.hostId}
+                  isActive={room.isActive}
+                  participantCount={room.participantCount}
+                  participants={room.participants}
+                />
+              ))
             )}
-          </TabsContent>
-          
-          <TabsContent value="tech" className="m-0">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {filteredRooms
-                .filter(room => room.roomType === 'tech')
-                .map(room => (
-                  <RoomCard
-                    key={room.id}
-                    id={room.id}
-                    name={room.name}
-                    description={room.description}
-                    hostId={room.hostId}
-                    isActive={room.isActive}
-                    participantCount={room.participantCount}
-                    participants={room.participants}
-                  />
-                ))}
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="music" className="m-0">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {filteredRooms
-                .filter(room => room.roomType === 'music')
-                .map(room => (
-                  <RoomCard
-                    key={room.id}
-                    id={room.id}
-                    name={room.name}
-                    description={room.description}
-                    hostId={room.hostId}
-                    isActive={room.isActive}
-                    participantCount={room.participantCount}
-                    participants={room.participants}
-                  />
-                ))}
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="design" className="m-0">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {filteredRooms
-                .filter(room => room.roomType === 'design')
-                .map(room => (
-                  <RoomCard
-                    key={room.id}
-                    id={room.id}
-                    name={room.name}
-                    description={room.description}
-                    hostId={room.hostId}
-                    isActive={room.isActive}
-                    participantCount={room.participantCount}
-                    participants={room.participants}
-                  />
-                ))}
-            </div>
-          </TabsContent>
+          </div>
         </Tabs>
       </motion.div>
     </div>
