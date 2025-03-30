@@ -87,6 +87,16 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
     setWsReady(true);
   }, []);
 
+  // Clean up room resources without navigation or toasts
+  const cleanupRoomResources = useCallback(() => {
+    stopAudioCapture();
+    setWsInstance(null);
+    setWsReady(false);
+    setIsInRoom(false);
+    setRoomId(null);
+    setCurrentRoomId(null);
+  }, [stopAudioCapture]);
+
   const joinRoom = useCallback((roomId: number) => {
     if (!currentUserId) {
       toast({
@@ -95,6 +105,11 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
         variant: "destructive"
       });
       return;
+    }
+
+    // If already in a room, clean up resources first but don't navigate or show toasts
+    if (isInRoom && currentRoomId) {
+      cleanupRoomResources();
     }
 
     // For hackathon demo: check if room exists in mock data
@@ -126,16 +141,14 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
       title: "Joined Room",
       description: `You've joined ${room.name}`,
     });
-  }, [currentUserId, initializeWebSocket, startAudioCapture, toast]);
+    
+    // Navigate to the room page directly from the context
+    navigate(`/room/${roomId}`);
+  }, [currentUserId, initializeWebSocket, startAudioCapture, toast, isInRoom, currentRoomId, cleanupRoomResources, navigate]);
 
   const leaveRoom = useCallback(() => {
     // Clean up resources
-    stopAudioCapture();
-    setWsInstance(null);
-    setWsReady(false);
-    setIsInRoom(false);
-    setRoomId(null);
-    setCurrentRoomId(null);
+    cleanupRoomResources();
     
     toast({
       title: "Left Room",
@@ -144,7 +157,7 @@ export function RoomProvider({ children }: { children: React.ReactNode }) {
     
     // Add redirection to home page after leaving the room
     navigate('/');
-  }, [stopAudioCapture, toast, navigate]);
+  }, [cleanupRoomResources, toast, navigate]);
 
   const sendVoiceActivity = useCallback((activityLevel: number) => {
     // Mock sending voice activity for hackathon demo

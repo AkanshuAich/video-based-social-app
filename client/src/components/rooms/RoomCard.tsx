@@ -3,6 +3,7 @@ import { getUserById } from '@/lib/mockData';
 import { useRoom } from '@/contexts/RoomContext';
 import UserAvatar from './UserAvatar';
 import { motion } from 'framer-motion';
+import { useLocation } from 'wouter';
 
 interface RoomParticipant {
   userId: number;
@@ -33,6 +34,7 @@ const RoomCard: React.FC<RoomCardProps> = ({
   participants = []
 }) => {
   const { joinRoom } = useRoom();
+  const [, navigate] = useLocation();
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
   
@@ -67,6 +69,8 @@ const RoomCard: React.FC<RoomCardProps> = ({
   // Handle room join
   const handleJoinRoom = () => {
     joinRoom(id);
+    // Navigate to the room page after joining
+    navigate(`/room/${id}`);
   };
   
   return (
